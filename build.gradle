@@ -1,5 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+    id 'me.champeau.jmh' version "0.7.1"
 }
 
 group = 'org.example'
@@ -19,4 +20,33 @@ test {
 
 kotlin {
     jvmToolchain(8)
+}
+
+compileJava {
+    options.compilerArgs << '--enable-preview' << '--add-modules' << 'jdk.incubator.vector'
+}
+
+compileJmhJava {
+    options.compilerArgs << '--enable-preview' << '--add-modules' << 'jdk.incubator.vector'
+}
+
+jmhRunBytecodeGenerator {
+    jvmArgs.addAll([ '--enable-preview', '--add-modules', 'jdk.incubator.vector' ])
+}
+
+jmh {
+    warmupIterations = 2
+    iterations = 2
+    fork = 2
+    benchmarkMode = ["avgt", "ss"]
+    timeUnit = "ms"
+    jvm = '/usr/lib/jvm/temurin-21-jdk-amd64/bin/java'
+    jvmArgsPrepend = [ '--enable-preview', '--add-modules', 'jdk.incubator.vector' ]
+}
+
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(20)
+    }
 }
